@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -22,8 +23,16 @@ public class MainActivity extends ActionBarActivity {
         editText = (EditText) findViewById(R.id.editText);
 
         button.setText("SUBMIT");
+        editText.setText("new text");
+
+        send();
     }
 
+    private void send() {
+
+        String text = editText.getText().toString();
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
