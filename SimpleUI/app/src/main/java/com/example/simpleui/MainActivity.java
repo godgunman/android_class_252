@@ -1,7 +1,10 @@
 package com.example.simpleui;
 
+import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,12 +35,26 @@ public class MainActivity extends ActionBarActivity {
                 send();
             }
         });
+
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                Log.d("debug", "keyCode = " + keyCode);
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN){
+                    send();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     private void send() {
 
         String text = editText.getText().toString();
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+        editText.setText("");
     }
 
     @Override
@@ -60,5 +77,20 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    View.OnClickListener listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            send();
+        }
+    };
+
+    class MyOnClickListner implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+
+        }
     }
 }
