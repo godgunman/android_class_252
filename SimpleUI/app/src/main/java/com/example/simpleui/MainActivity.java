@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -22,6 +23,8 @@ public class MainActivity extends ActionBarActivity {
     private Button button;
     private EditText editText;
     private CheckBox checkBox;
+    private TextView textView;
+
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
 
@@ -36,6 +39,7 @@ public class MainActivity extends ActionBarActivity {
         button = (Button) findViewById(R.id.button);
         editText = (EditText) findViewById(R.id.editText);
         checkBox = (CheckBox) findViewById(R.id.checkBox);
+        textView = (TextView) findViewById(R.id.history);
 
         button.setText("SUBMIT");
         editText.setText(sp.getString("text", ""));
@@ -73,6 +77,9 @@ public class MainActivity extends ActionBarActivity {
                 editor.commit();
             }
         });
+
+        String history = Utils.readFile(this, "history");
+        textView.setText(history);
     }
 
     private void send() {
@@ -86,6 +93,9 @@ public class MainActivity extends ActionBarActivity {
 
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
         editText.setText("");
+
+        String history = Utils.readFile(this, "history");
+        textView.setText(history);
     }
 
     @Override
