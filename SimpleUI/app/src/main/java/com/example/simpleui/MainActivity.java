@@ -10,10 +10,12 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +25,7 @@ public class MainActivity extends ActionBarActivity {
     private Button button;
     private EditText editText;
     private CheckBox checkBox;
-    private TextView textView;
+    private ListView listView;
 
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
@@ -39,7 +41,7 @@ public class MainActivity extends ActionBarActivity {
         button = (Button) findViewById(R.id.button);
         editText = (EditText) findViewById(R.id.editText);
         checkBox = (CheckBox) findViewById(R.id.checkBox);
-        textView = (TextView) findViewById(R.id.history);
+        listView = (ListView) findViewById(R.id.listView);
 
         button.setText("SUBMIT");
         editText.setText(sp.getString("text", ""));
@@ -78,8 +80,17 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        String history = Utils.readFile(this, "history");
-        textView.setText(history);
+        updateHistory();
+    }
+
+    private void updateHistory() {
+
+        String[] data = Utils.readFile(this, "history").split("\n");
+
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, data);
+
+        listView.setAdapter(adapter);
     }
 
     private void send() {
@@ -94,8 +105,7 @@ public class MainActivity extends ActionBarActivity {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
         editText.setText("");
 
-        String history = Utils.readFile(this, "history");
-        textView.setText(history);
+        updateHistory();
     }
 
     @Override
