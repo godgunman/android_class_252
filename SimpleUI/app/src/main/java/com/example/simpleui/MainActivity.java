@@ -82,6 +82,8 @@ public class MainActivity extends ActionBarActivity {
             text = "*****";
         }
 
+        Utils.writeFile(this, "history", text + "\n");
+
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
         editText.setText("");
     }
