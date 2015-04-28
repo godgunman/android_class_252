@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ public class MainActivity extends ActionBarActivity {
 
     private Button button;
     private EditText editText;
+    private CheckBox checkBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +27,7 @@ public class MainActivity extends ActionBarActivity {
 
         button = (Button) findViewById(R.id.button);
         editText = (EditText) findViewById(R.id.editText);
+        checkBox = (CheckBox) findViewById(R.id.checkBox);
 
         button.setText("SUBMIT");
         editText.setText("new text");
@@ -53,6 +56,10 @@ public class MainActivity extends ActionBarActivity {
     private void send() {
 
         String text = editText.getText().toString();
+        if (checkBox.isChecked()) {
+            text = "*****";
+        }
+
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
         editText.setText("");
     }
