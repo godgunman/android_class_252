@@ -1,6 +1,8 @@
 package com.example.simpleui;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,18 +21,23 @@ public class MainActivity extends ActionBarActivity {
     private Button button;
     private EditText editText;
     private CheckBox checkBox;
+    private SharedPreferences sp;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sp = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        editor = sp.edit();
+
         button = (Button) findViewById(R.id.button);
         editText = (EditText) findViewById(R.id.editText);
         checkBox = (CheckBox) findViewById(R.id.checkBox);
 
         button.setText("SUBMIT");
-        editText.setText("new text");
+        editText.setText(sp.getString("text", ""));
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -42,6 +49,10 @@ public class MainActivity extends ActionBarActivity {
         editText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                String text = editText.getText().toString();
+                editor.putString("text", text);
+                editor.commit();
 
                 Log.d("debug", "keyCode = " + keyCode);
                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN){
