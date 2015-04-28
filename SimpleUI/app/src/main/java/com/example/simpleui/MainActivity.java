@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ public class MainActivity extends ActionBarActivity {
 
         button.setText("SUBMIT");
         editText.setText(sp.getString("text", ""));
+        checkBox.setChecked(sp.getBoolean("checkbox", false));
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,6 +62,15 @@ public class MainActivity extends ActionBarActivity {
                     return true;
                 }
                 return false;
+            }
+        });
+
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                editor.putBoolean("checkbox", isChecked);
+                editor.commit();
             }
         });
     }
