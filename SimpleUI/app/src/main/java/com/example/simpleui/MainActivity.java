@@ -83,6 +83,10 @@ public class MainActivity extends ActionBarActivity {
         updateHistory();
     }
 
+    public void goToOrderActivity(View view) {
+        
+    }
+
     private void updateHistory() {
 
         String[] data = Utils.readFile(this, "history").split("\n");
