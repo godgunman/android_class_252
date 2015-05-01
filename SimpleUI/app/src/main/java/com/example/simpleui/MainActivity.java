@@ -89,6 +89,7 @@ public class MainActivity extends ActionBarActivity {
         Intent intent = new Intent();
         intent.setClass(this, OrderActivity.class);
         startActivity(intent);
+
     }
 
     private void updateHistory() {
