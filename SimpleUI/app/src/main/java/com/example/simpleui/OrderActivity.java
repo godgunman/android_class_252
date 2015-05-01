@@ -4,6 +4,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 
 public class OrderActivity extends ActionBarActivity {
@@ -14,6 +16,11 @@ public class OrderActivity extends ActionBarActivity {
         setContentView(R.layout.activity_order);
     }
 
+    public void counter(View view) {
+        Button button = (Button) view;
+        int i = Integer.parseInt(button.getText().toString());
+        button.setText(String.valueOf(i + 1));
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
