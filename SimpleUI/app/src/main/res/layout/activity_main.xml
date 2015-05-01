@@ -55,6 +55,7 @@
         android:layout_above="@+id/listView"
         android:layout_toLeftOf="@+id/button"
         android:layout_toStartOf="@+id/button"
+        android:nestedScrollingEnabled="true"
         android:onClick="goToOrderActivity" />
 
 </RelativeLayout>

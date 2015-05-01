@@ -2,6 +2,7 @@ package com.example.simpleui;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -84,7 +85,10 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void goToOrderActivity(View view) {
-        
+
+        Intent intent = new Intent();
+        intent.setClass(this, OrderActivity.class);
+        startActivity(intent);
     }
 
     private void updateHistory() {
