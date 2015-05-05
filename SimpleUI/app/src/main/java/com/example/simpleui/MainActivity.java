@@ -17,6 +17,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ public class MainActivity extends ActionBarActivity {
     private EditText editText;
     private CheckBox checkBox;
     private ListView listView;
+    private Spinner spinner;
 
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
@@ -45,6 +47,7 @@ public class MainActivity extends ActionBarActivity {
         editText = (EditText) findViewById(R.id.editText);
         checkBox = (CheckBox) findViewById(R.id.checkBox);
         listView = (ListView) findViewById(R.id.listView);
+        spinner = (Spinner) findViewById(R.id.spinner);
 
         button.setText("SUBMIT");
         editText.setText(sp.getString("text", ""));
@@ -84,6 +87,16 @@ public class MainActivity extends ActionBarActivity {
         });
 
         updateHistory();
+        setStoreName();
+    }
+
+    public void setStoreName() {
+        String[] storeNames = {"台大店", "師大店", "台北車站店"};
+
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, storeNames);
+
+        spinner.setAdapter(adapter);
     }
 
     public void goToOrderActivity(View view) {
