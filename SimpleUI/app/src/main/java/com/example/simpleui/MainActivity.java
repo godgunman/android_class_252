@@ -91,7 +91,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void setStoreName() {
-        String[] storeNames = {"台大店", "師大店", "台北車站店"};
+        String[] storeNames = getResources().getStringArray(R.array.storeName);
 
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, storeNames);

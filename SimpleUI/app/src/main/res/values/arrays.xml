@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="storeName">
+        <item>台大店</item>
+        <item>師大店</item>
+        <item>台北車站店</item>
+    </string-array>
+
+</resources>
