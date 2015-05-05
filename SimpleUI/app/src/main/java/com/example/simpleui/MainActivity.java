@@ -21,6 +21,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class MainActivity extends ActionBarActivity {
 
@@ -34,6 +38,8 @@ public class MainActivity extends ActionBarActivity {
 
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
+
+    private JSONArray orderInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,14 +126,26 @@ public class MainActivity extends ActionBarActivity {
     private void send() {
 
         String text = editText.getText().toString();
+
         if (checkBox.isChecked()) {
             text = "*****";
         }
 
-        Utils.writeFile(this, "history", text + "\n");
+        try {
+            JSONObject all = new JSONObject();
+            all.put("note", text);
+            all.put("order", orderInfo);
+            all.put("storeName", (String) spinner.getSelectedItem());
 
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-        editText.setText("");
+            Utils.writeFile(this, "history", all.toString() + "\n");
+
+            Toast.makeText(this, all.toString(), Toast.LENGTH_LONG).show();
+            editText.setText("");
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         updateHistory();
     }
@@ -161,6 +179,13 @@ public class MainActivity extends ActionBarActivity {
         if (requestCode == REQUEST_CODE_ORDER_ACTIVITY) {
             if (resultCode == RESULT_OK) {
                 String jsonArrayString = data.getStringExtra("order");
+
+                try {
+                    orderInfo = new JSONArray(jsonArrayString);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 Toast.makeText(this, jsonArrayString, Toast.LENGTH_LONG).show();
             }
         }
