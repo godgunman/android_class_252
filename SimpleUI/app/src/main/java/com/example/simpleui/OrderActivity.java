@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,6 +28,14 @@ public class OrderActivity extends ActionBarActivity {
         button.setText(String.valueOf(i + 1));
 
         getData();
+    }
+
+    public void reset(View view) {
+
+    }
+
+    public void ok(View view) {
+
     }
 
     private void getData() {
