@@ -103,8 +103,8 @@ public class MainActivity extends ActionBarActivity {
 
         Intent intent = new Intent();
         intent.setClass(this, OrderActivity.class);
+        intent.putExtra("storeName", (String) spinner.getSelectedItem());
         startActivityForResult(intent, REQUEST_CODE_ORDER_ACTIVITY);
-
     }
 
     private void updateHistory() {

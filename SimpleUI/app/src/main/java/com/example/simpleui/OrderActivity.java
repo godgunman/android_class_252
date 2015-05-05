@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,10 +18,16 @@ import org.json.JSONObject;
 
 public class OrderActivity extends ActionBarActivity {
 
+    private TextView textView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
+
+        String storeName = getIntent().getStringExtra("storeName");
+        textView = (TextView) findViewById(R.id.storeName);
+        textView.setText(storeName);
     }
 
     public void counter(View view) {
