@@ -17,6 +17,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +25,12 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -113,12 +120,41 @@ public class MainActivity extends ActionBarActivity {
         startActivityForResult(intent, REQUEST_CODE_ORDER_ACTIVITY);
     }
 
+    private int getDrinkNumber(JSONArray array) {
+        return new Random().nextInt();
+    }
+
     private void updateHistory() {
 
-        String[] data = Utils.readFile(this, "history").split("\n");
+        String[] rawData = Utils.readFile(this, "history").split("\n");
 
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, data);
+        List<Map<String, String>> data = new ArrayList<>();
+
+        for(int i =0 ; i < rawData.length;i++) {
+            try {
+                JSONObject object = new JSONObject(rawData[i]);
+                String storeName = object.getString("storeName");
+                String note = object.getString("note");
+                JSONArray order = object.getJSONArray("order");
+
+                Map<String, String> item = new HashMap<>();
+                item.put("storeName", storeName);
+                item.put("note", note);
+                item.put("drinkNumber", String.valueOf(getDrinkNumber(order)));
+
+                data.add(item);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        String[] from = {"storeName", "note", "drinkNumber"};
+        int[] to = {R.id.storeName, R.id.note, R.id.number};
+        SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.listview_item, from, to);
+
+//        ArrayAdapter<String> adapter =
+//                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, data);
 
         listView.setAdapter(adapter);
     }
