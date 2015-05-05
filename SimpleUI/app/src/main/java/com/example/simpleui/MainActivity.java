@@ -23,6 +23,8 @@ import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity {
 
+    private static final int REQUEST_CODE_ORDER_ACTIVITY = 0;
+
     private Button button;
     private EditText editText;
     private CheckBox checkBox;
@@ -88,7 +90,7 @@ public class MainActivity extends ActionBarActivity {
 
         Intent intent = new Intent();
         intent.setClass(this, OrderActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_CODE_ORDER_ACTIVITY);
 
     }
 
@@ -137,6 +139,19 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_ORDER_ACTIVITY) {
+            if (resultCode == RESULT_OK) {
+                String jsonArrayString = data.getStringExtra("order");
+                Toast.makeText(this, jsonArrayString, Toast.LENGTH_LONG).show();
+            }
+        }
+
     }
 
     View.OnClickListener listener = new View.OnClickListener() {
