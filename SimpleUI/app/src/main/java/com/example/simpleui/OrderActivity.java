@@ -1,5 +1,6 @@
 package com.example.simpleui;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,9 +37,14 @@ public class OrderActivity extends ActionBarActivity {
 
     public void ok(View view) {
 
+        Intent data = new Intent();
+        data.putExtra("order", getData().toString());
+
+        setResult(RESULT_OK, data);
+        finish();
     }
 
-    private void getData() {
+    private JSONArray getData() {
 
         String blackTeaL = ((Button)findViewById(R.id.black_tea_l)).getText().toString();
         String blackTeaM = ((Button)findViewById(R.id.black_tea_m)).getText().toString();
@@ -64,10 +70,13 @@ public class OrderActivity extends ActionBarActivity {
 
             Log.d("debug", order.toString());
 
+            return order;
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
+        return null;
     }
 
     @Override
