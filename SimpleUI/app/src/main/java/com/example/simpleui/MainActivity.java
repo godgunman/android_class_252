@@ -60,10 +60,6 @@ public class MainActivity extends ActionBarActivity {
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "fgKEQGJ5j5hQRbC3Mwytop2zyR70MWyoSYUlpM9S", "cpaz9soGN8tfBG9VpeqjGBn4Oe3xza7DNepqIbbO");
 
-        ParseObject testObject = new ParseObject("TestObject");
-        testObject.put("foo", "bar");
-        testObject.saveInBackground();
-
         sp = getSharedPreferences("settings", Context.MODE_PRIVATE);
         editor = sp.edit();
 
@@ -187,6 +183,13 @@ public class MainActivity extends ActionBarActivity {
             Utils.writeFile(this, "history", all.toString() + "\n");
 
             Toast.makeText(this, all.toString(), Toast.LENGTH_LONG).show();
+
+            ParseObject testObject = new ParseObject("Order");
+            testObject.put("note", text);
+            testObject.put("order", orderInfo);
+            testObject.put("storeName", (String) spinner.getSelectedItem());
+            testObject.saveInBackground();
+
             editText.setText("");
 
 
