@@ -152,37 +152,36 @@ public class MainActivity extends ActionBarActivity {
 
     private void updateHistory() {
 
-        String[] rawData = Utils.readFile(this, "history").split("\n");
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Order");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                if (e == null) {
 
-        List<Map<String, String>> data = new ArrayList<>();
+                    List<Map<String, String>> data = new ArrayList<>();
 
-        for(int i =0 ; i < rawData.length;i++) {
-            try {
-                JSONObject object = new JSONObject(rawData[i]);
-                String storeName = object.getString("storeName");
-                String note = object.getString("note");
-                JSONArray order = object.getJSONArray("order");
+                    for (ParseObject object:list) {
 
-                Map<String, String> item = new HashMap<>();
-                item.put("storeName", storeName);
-                item.put("note", note);
-                item.put("drinkNumber", String.valueOf(getDrinkNumber(order)));
+                        String storeName = object.getString("storeName");
+                        String note = object.getString("note");
+                        JSONArray order = object.getJSONArray("order");
 
-                data.add(item);
+                        Map<String, String> item = new HashMap<>();
+                        item.put("storeName", storeName);
+                        item.put("note", note);
+                        item.put("drinkNumber", String.valueOf(getDrinkNumber(order)));
 
-            } catch (JSONException e) {
-                e.printStackTrace();
+                        data.add(item);
+                    }
+
+                    String[] from = {"storeName", "note", "drinkNumber"};
+                    int[] to = {R.id.storeName, R.id.note, R.id.number};
+                    SimpleAdapter adapter = new SimpleAdapter(MainActivity.this, data, R.layout.listview_item, from, to);
+                    listView.setAdapter(adapter);
+                }
             }
-        }
+        });
 
-        String[] from = {"storeName", "note", "drinkNumber"};
-        int[] to = {R.id.storeName, R.id.note, R.id.number};
-        SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.listview_item, from, to);
-
-//        ArrayAdapter<String> adapter =
-//                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, data);
-
-        listView.setAdapter(adapter);
     }
 
     private void send() {
