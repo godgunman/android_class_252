@@ -23,7 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.Parse;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -182,13 +184,24 @@ public class MainActivity extends ActionBarActivity {
 
             Utils.writeFile(this, "history", all.toString() + "\n");
 
-            Toast.makeText(this, all.toString(), Toast.LENGTH_LONG).show();
 
             ParseObject testObject = new ParseObject("Order");
             testObject.put("note", text);
             testObject.put("order", orderInfo);
             testObject.put("storeName", (String) spinner.getSelectedItem());
-            testObject.saveInBackground();
+            testObject.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Toast.makeText(MainActivity.this, "saved", Toast.LENGTH_LONG).show();
+                    } else {
+                        e.printStackTrace();
+                    }
+                    Log.d("debug", "line200");
+                }
+            });
+
+            Log.d("debug", "line204");
 
             editText.setText("");
 
