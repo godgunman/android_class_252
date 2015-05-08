@@ -22,9 +22,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
 import org.json.JSONArray;
@@ -113,12 +115,27 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void setStoreName() {
-        String[] storeNames = getResources().getStringArray(R.array.storeName);
+        ParseQuery<ParseObject> query = new ParseQuery<>("StoreInfo");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                if (e == null) {
+                    String[] storeNames = new String[list.size()];
 
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, storeNames);
+                    for (int i = 0; i < list.size(); i++) {
+                        String name = list.get(i).getString("name");
+                        String address = list.get(i).getString("address");
 
-        spinner.setAdapter(adapter);
+                        storeNames[i] = name + "," + address;
+                    }
+                    ArrayAdapter<String> adapter =
+                            new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_item, storeNames);
+
+                    spinner.setAdapter(adapter);
+                }
+            }
+        });
+
     }
 
     public void goToOrderActivity(View view) {
