@@ -1,5 +1,6 @@
 package com.example.simpleui;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,6 +50,7 @@ public class MainActivity extends ActionBarActivity {
     private CheckBox checkBox;
     private ListView listView;
     private Spinner spinner;
+    private ProgressDialog progressDialog;
 
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
@@ -66,6 +68,8 @@ public class MainActivity extends ActionBarActivity {
 
         sp = getSharedPreferences("settings", Context.MODE_PRIVATE);
         editor = sp.edit();
+
+        progressDialog = new ProgressDialog(this);
 
         button = (Button) findViewById(R.id.button);
         editText = (EditText) findViewById(R.id.editText);
@@ -152,6 +156,10 @@ public class MainActivity extends ActionBarActivity {
 
     private void updateHistory() {
 
+        progressDialog.setTitle("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Order");
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -178,6 +186,8 @@ public class MainActivity extends ActionBarActivity {
                     int[] to = {R.id.storeName, R.id.note, R.id.number};
                     SimpleAdapter adapter = new SimpleAdapter(MainActivity.this, data, R.layout.listview_item, from, to);
                     listView.setAdapter(adapter);
+
+                    progressDialog.dismiss();
                 }
             }
         });
