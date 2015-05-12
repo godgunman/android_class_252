@@ -62,10 +62,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "fgKEQGJ5j5hQRbC3Mwytop2zyR70MWyoSYUlpM9S", "cpaz9soGN8tfBG9VpeqjGBn4Oe3xza7DNepqIbbO");
-
         sp = getSharedPreferences("settings", Context.MODE_PRIVATE);
         editor = sp.edit();
 
@@ -168,7 +164,7 @@ public class MainActivity extends ActionBarActivity {
 
                     List<Map<String, String>> data = new ArrayList<>();
 
-                    for (ParseObject object:list) {
+                    for (ParseObject object : list) {
 
                         String storeName = object.getString("storeName");
                         String note = object.getString("note");
@@ -191,7 +187,6 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         });
-
     }
 
     private void send() {
