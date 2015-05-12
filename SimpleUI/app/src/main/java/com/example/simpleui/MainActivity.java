@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -112,19 +114,47 @@ public class MainActivity extends ActionBarActivity {
 
         updateHistory();
         setStoreName();
+    }
 
-//        Utils.disableStrictMode();
+    private List<JSONObject> locationList;
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String content1 = Utils.fetch("http://maps.googleapis.com/maps/api/geocode/json?address=%E8%87%BA%E5%8C%97%E5%B8%82%E7%BE%85%E6%96%AF%E7%A6%8F%E8%B7%AF%E5%9B%9B%E6%AE%B5%E4%B8%80%E8%99%9F&sensor=false");
-                JSONObject location = Utils.addressToLocation("臺北市羅斯福路四段一號");
-                Log.d("debug", content1);
-                Log.d("debug", location.toString());
-            }
-        }).start();
+    private AsyncTask<Object, Void, JSONObject> findAddressTask = new AsyncTask<Object, Void, JSONObject>() {
+        int index;
 
+        // 0: (string)address, 1: (int)index
+        @Override
+        protected JSONObject doInBackground(Object... params) {
+            index = (int) params[1];
+
+            JSONObject jsonObject = Utils.addressToLocation((String) params[0]);
+            return jsonObject;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject jsonObject) {
+            Log.d("debug", jsonObject.toString());
+            locationList.add(index, jsonObject);
+        }
+    };
+
+    class FindAddressTask extends AsyncTask<Object, Void, JSONObject> {
+
+        int index;
+
+        // 0: (string)address, 1: (int)index
+        @Override
+        protected JSONObject doInBackground(Object... params) {
+            index = (int) params[1];
+
+            JSONObject jsonObject = Utils.addressToLocation((String) params[0]);
+            return jsonObject;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject jsonObject) {
+            Log.d("debug", jsonObject.toString());
+            locationList.add(index, jsonObject);
+        }
     }
 
     public void setStoreName() {
@@ -135,9 +165,16 @@ public class MainActivity extends ActionBarActivity {
                 if (e == null) {
                     String[] storeNames = new String[list.size()];
 
+                    locationList = new ArrayList<JSONObject>(list.size());
+
                     for (int i = 0; i < list.size(); i++) {
                         String name = list.get(i).getString("name");
                         String address = list.get(i).getString("address");
+
+//                        findAddressTask.execute(address, i);
+
+                        FindAddressTask fat = new FindAddressTask();
+                        fat.execute(address, i);
 
                         storeNames[i] = name + "," + address;
                     }
