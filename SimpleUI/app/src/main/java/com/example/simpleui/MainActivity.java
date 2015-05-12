@@ -93,7 +93,7 @@ public class MainActivity extends ActionBarActivity {
                 editor.commit();
 
                 Log.d("debug", "keyCode = " + keyCode);
-                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN){
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
                     send();
                     return true;
                 }
@@ -112,6 +112,13 @@ public class MainActivity extends ActionBarActivity {
 
         updateHistory();
         setStoreName();
+
+        Utils.disableStrictMode();
+        String content1 = Utils.fetch("http://maps.googleapis.com/maps/api/geocode/json?address=%E8%87%BA%E5%8C%97%E5%B8%82%E7%BE%85%E6%96%AF%E7%A6%8F%E8%B7%AF%E5%9B%9B%E6%AE%B5%E4%B8%80%E8%99%9F&sensor=false");
+        JSONObject location = Utils.addressToLocation("臺北市羅斯福路四段一號");
+
+        Log.d("debug", content1);
+        Log.d("debug", location.toString());
     }
 
     public void setStoreName() {
@@ -135,7 +142,6 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         });
-
     }
 
     public void goToOrderActivity(View view) {
