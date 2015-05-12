@@ -2,10 +2,16 @@ package com.example.simpleui;
 
 import android.content.Context;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * Created by ggm on 4/28/15.
@@ -43,5 +49,28 @@ public class Utils {
         }
 
         return "";
+    }
+
+    public static String fetch(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            URLConnection urlConnection = url.openConnection();
+            InputStream is = urlConnection.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader reader = new BufferedReader(isr);
+
+            String result = "";
+            String line;
+            while( (line = reader.readLine()) != null) {
+                result += line;
+            }
+            return result;
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
