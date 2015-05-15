@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
@@ -65,6 +66,7 @@ public class MainActivity extends ActionBarActivity {
     private SharedPreferences.Editor editor;
 
     private JSONArray orderInfo;
+    private Bitmap bm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -262,11 +264,16 @@ public class MainActivity extends ActionBarActivity {
 
             Utils.writeFile(this, "history", all.toString() + "\n");
 
-
             ParseObject testObject = new ParseObject("Order");
             testObject.put("note", text);
             testObject.put("order", orderInfo);
             testObject.put("storeName", (String) spinner.getSelectedItem());
+
+            if (bm != null) {
+                ParseFile file = new ParseFile("photo.png", Utils.bitmapToBytes(bm));
+                testObject.put("photo", file);
+            }
+
             testObject.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
@@ -337,7 +344,7 @@ public class MainActivity extends ActionBarActivity {
             }
         } else if (requestCode == REQUEST_CODE_TAKE_PHOTO) {
             if (resultCode == RESULT_OK) {
-                Bitmap bm = data.getParcelableExtra("data");
+                bm = data.getParcelableExtra("data");
                 imageView.setImageBitmap(bm);
             }
         }
