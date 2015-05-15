@@ -9,7 +9,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="10"
         android:id="@+id/number"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/storeName"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
