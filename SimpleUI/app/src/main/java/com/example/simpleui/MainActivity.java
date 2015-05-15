@@ -53,7 +53,6 @@ public class MainActivity extends ActionBarActivity {
     private static final int REQUEST_CODE_ORDER_ACTIVITY = 0;
     private static final int REQUEST_CODE_TAKE_PHOTO = 1;
 
-
     private Button button;
     private EditText editText;
     private CheckBox checkBox;
@@ -68,6 +67,7 @@ public class MainActivity extends ActionBarActivity {
 
     private JSONArray orderInfo;
     private Bitmap bm;
+    private List<ParseObject> orderObjects;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,8 +117,28 @@ public class MainActivity extends ActionBarActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                ParseObject order = orderObjects.get(position);
+
+                String note = order.getString("note");
+                String storeName = order.getString("storeName");
+                ParseFile file = order.getParseFile("photo");
+                JSONArray array = order.getJSONArray("order");
+
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, OrderDetailActivity.class);
+
+                try {
+                    intent.putExtra("note", note);
+                    intent.putExtra("storeName", storeName);
+                    if (file != null) {
+                        intent.putExtra("file", file.getData());
+                    }
+                    intent.putExtra("array",array.toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
                 startActivity(intent);
             }
         });
@@ -230,6 +250,8 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
                 if (e == null) {
+
+                    orderObjects = list;
 
                     List<Map<String, String>> data = new ArrayList<>();
 
