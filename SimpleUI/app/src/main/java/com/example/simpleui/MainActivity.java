@@ -266,46 +266,30 @@ public class MainActivity extends ActionBarActivity {
             text = "*****";
         }
 
-        try {
-            JSONObject all = new JSONObject();
-            all.put("note", text);
-            all.put("order", orderInfo);
-            all.put("storeName", (String) spinner.getSelectedItem());
+        ParseObject orderObject = new ParseObject("Order");
+        orderObject.put("note", text);
+        orderObject.put("order", orderInfo);
+        orderObject.put("storeName", (String) spinner.getSelectedItem());
 
-            Utils.writeFile(this, "history", all.toString() + "\n");
-
-            ParseObject testObject = new ParseObject("Order");
-            testObject.put("note", text);
-            testObject.put("order", orderInfo);
-            testObject.put("storeName", (String) spinner.getSelectedItem());
-
-            if (bm != null) {
-                ParseFile file = new ParseFile("photo.png", Utils.bitmapToBytes(bm));
-                testObject.put("photo", file);
-            }
-
-            testObject.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        Toast.makeText(MainActivity.this, "saved", Toast.LENGTH_LONG).show();
-                    } else {
-                        e.printStackTrace();
-                    }
-                    Log.d("debug", "line200");
-                }
-            });
-
-            Log.d("debug", "line204");
-
-            editText.setText("");
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (bm != null) {
+            ParseFile file = new ParseFile("photo.png", Utils.bitmapToBytes(bm));
+            orderObject.put("photo", file);
         }
 
-        updateHistory();
+        orderObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Toast.makeText(MainActivity.this, "saved", Toast.LENGTH_LONG).show();
+                } else {
+                    e.printStackTrace();
+                }
+                updateHistory();
+            }
+        });
+
+        editText.setText("");
+
     }
 
     @Override
