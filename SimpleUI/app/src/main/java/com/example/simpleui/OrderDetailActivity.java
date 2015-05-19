@@ -1,9 +1,14 @@
 package com.example.simpleui;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 
 public class OrderDetailActivity extends ActionBarActivity {
@@ -12,6 +17,21 @@ public class OrderDetailActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_detail);
+
+        Intent intent = getIntent();
+
+        String note = intent.getStringExtra("note");
+        String storeName = intent.getStringExtra("storeName");
+        if (intent.hasExtra("file")) {
+            byte[] file = intent.getByteArrayExtra("file");
+        }
+        try {
+            JSONArray array = new JSONArray(intent.getStringExtra("array"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("debug", "note:" + note + ", storeName" + storeName );
     }
 
     @Override
