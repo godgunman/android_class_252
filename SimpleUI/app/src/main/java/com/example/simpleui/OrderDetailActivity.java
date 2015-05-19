@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,10 +14,14 @@ import org.json.JSONException;
 
 public class OrderDetailActivity extends ActionBarActivity {
 
+    private WebView webView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_detail);
+
+        webView = (WebView) findViewById(R.id.webView);
 
         Intent intent = getIntent();
 
@@ -32,6 +37,11 @@ public class OrderDetailActivity extends ActionBarActivity {
         }
 
         Log.d("debug", "note:" + note + ", storeName" + storeName );
+        webView.loadUrl(getStaticMapURL());
+    }
+
+    public String getStaticMapURL() {
+        return "https://maps.googleapis.com/maps/api/staticmap?center=25.0592004,121.566003&zoom=17&size=600x300";
     }
 
     @Override
