@@ -7,9 +7,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 
 public class OrderDetailActivity extends ActionBarActivity {
@@ -37,11 +41,21 @@ public class OrderDetailActivity extends ActionBarActivity {
         }
 
         Log.d("debug", "note:" + note + ", storeName" + storeName );
-        webView.loadUrl(getStaticMapURL());
+        webView.loadUrl(getStaticMapURL(storeName));
+        webView.setWebViewClient(new WebViewClient());
     }
 
-    public String getStaticMapURL() {
-        return "https://maps.googleapis.com/maps/api/staticmap?center=25.0592004,121.566003&zoom=17&size=600x300";
+    public String getStaticMapURL(String storeName) {
+        String address = storeName.split(",")[1];
+        try {
+            String encodedAddress = URLEncoder.encode(address, "utf-8");
+            return "https://maps.googleapis.com/maps/api/staticmap?center="
+                    + encodedAddress
+                    + "&zoom=17&size=600x300";
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
