@@ -9,6 +9,11 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -43,6 +48,16 @@ public class OrderDetailActivity extends ActionBarActivity {
         Log.d("debug", "note:" + note + ", storeName" + storeName );
         webView.loadUrl(getStaticMapURL(storeName));
         webView.setWebViewClient(new WebViewClient());
+
+        initGoogleMaps();
+    }
+
+    public void initGoogleMaps() {
+
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        GoogleMap googleMap = mapFragment.getMap();
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(
+                new LatLng(25.017273, 121.542012)));
     }
 
     public String getStaticMapURL(String storeName) {
