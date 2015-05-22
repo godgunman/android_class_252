@@ -54,10 +54,16 @@ public class OrderDetailActivity extends ActionBarActivity {
 
     public void initGoogleMaps() {
 
+        LatLng address = new LatLng(25.017273, 121.542012);
+
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         GoogleMap googleMap = mapFragment.getMap();
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(
-                new LatLng(25.017273, 121.542012)));
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(address));
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(address, 16));
+
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(address, 16));
+
     }
 
     public String getStaticMapURL(String storeName) {
