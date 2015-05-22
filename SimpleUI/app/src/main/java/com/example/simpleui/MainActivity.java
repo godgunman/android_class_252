@@ -125,10 +125,14 @@ public class MainActivity extends ActionBarActivity {
                 ParseFile file = order.getParseFile("photo");
                 JSONArray array = order.getJSONArray("order");
 
+                JSONObject location = locationList.get(position);
+
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, OrderDetailActivity.class);
 
                 try {
+                    intent.putExtra("lat", location.getDouble("lat"));
+                    intent.putExtra("lng", location.getDouble("lng"));
                     intent.putExtra("note", note);
                     intent.putExtra("storeName", storeName);
                     if (file != null) {
@@ -136,6 +140,8 @@ public class MainActivity extends ActionBarActivity {
                     }
                     intent.putExtra("array",array.toString());
                 } catch (ParseException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
