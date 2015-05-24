@@ -1,6 +1,8 @@
 package com.example.simpleui;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -19,11 +23,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class OrderDetailActivity extends ActionBarActivity {
 
-    private WebView webView;
+    private TextView storeName;
+    private ImageView photo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,29 +47,51 @@ public class OrderDetailActivity extends ActionBarActivity {
             initWebView();
         }
 
-        Intent intent = getIntent();
+        initViewsInstance();
+        setViewsValue();
 
-        String note = intent.getStringExtra("note");
-        String storeName = intent.getStringExtra("storeName");
+    }
+
+    private void initViewsInstance() {
+        storeName = (TextView) findViewById(R.id.textView_storeName);
+        photo = (ImageView) findViewById(R.id.imageView_photo);
+    }
+
+    private void setViewsValue() {
+
+        Intent intent = getIntent();
+        storeName.setText(intent.getStringExtra("storeName")
+                + ","
+                + intent.getStringExtra("storeAddress"));
+
         if (intent.hasExtra("file")) {
             byte[] file = intent.getByteArrayExtra("file");
+            photo.setImageBitmap(BitmapFactory.decodeByteArray(file, 0, file.length));
         }
-        try {
-            JSONArray array = new JSONArray(intent.getStringExtra("array"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Log.d("debug", "note:" + note + ", storeName" + storeName);
-
     }
 
     private void initGoogleMap() {
 
-        double lat = getIntent().getDoubleExtra("lat", 0);
-        double lng = getIntent().getDoubleExtra("lng", 0);
+        String address = getIntent().getStringExtra("storeAddress");
 
-        LatLng latLng = new LatLng(lat, lng);
+        FindGeoTask task = new FindGeoTask();
+        task.execute(address, new FindGeoTask.TaskCallback() {
+            public void done(JSONObject jsonObject) {
+                try {
 
+                    double lat = jsonObject.getDouble("lat");
+                    double lng = jsonObject.getDouble("lng");
+                    setGMapValue(new LatLng(lat, lng));
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+
+    private void setGMapValue(LatLng latLng) {
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         GoogleMap googleMap = mapFragment.getMap();
 //        googleMap.moveCamera(CameraUpdateFactory.newLatLng(address));
@@ -80,10 +108,10 @@ public class OrderDetailActivity extends ActionBarActivity {
     }
 
     private void initWebView() {
-        String storeName = getIntent().getStringExtra("storeName");
+        String storeAddress = getIntent().getStringExtra("storeAddress");
 
-        webView = (WebView) findViewById(R.id.webView);
-        webView.loadUrl(Utils.getStaticMapURL(storeName));
+        WebView webView = (WebView) findViewById(R.id.webView);
+        webView.loadUrl(Utils.getStaticMapURL(storeAddress));
         webView.setWebViewClient(new WebViewClient());
     }
 

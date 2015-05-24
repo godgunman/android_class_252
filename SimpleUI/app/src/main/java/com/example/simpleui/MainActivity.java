@@ -70,7 +70,6 @@ public class MainActivity extends ActionBarActivity {
     private Bitmap bm;
 
     private List<ParseObject> orderObjects;
-    private List<JSONObject> locationList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,8 +127,7 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 ParseObject order = orderObjects.get(position);
-
-                goToOrderDetailActivity(position, order);
+                goToOrderDetailActivity(order);
             }
         });
 
@@ -192,17 +190,9 @@ public class MainActivity extends ActionBarActivity {
                 if (e == null) {
                     String[] storeNames = new String[list.size()];
 
-                    locationList = new ArrayList<JSONObject>(list.size());
-
                     for (int i = 0; i < list.size(); i++) {
                         String name = list.get(i).getString("name");
                         String address = list.get(i).getString("address");
-
-//                        findAddressTask.execute(address, i);
-
-                        FindGeoFromAddressTask task = new FindGeoFromAddressTask(locationList);
-                        task.execute(address, i);
-
                         storeNames[i] = name + "," + address;
                     }
                     ArrayAdapter<String> adapter =
@@ -222,29 +212,27 @@ public class MainActivity extends ActionBarActivity {
         startActivityForResult(intent, REQUEST_CODE_ORDER_ACTIVITY);
     }
 
-    private void goToOrderDetailActivity(int position, ParseObject order) {
+    private void goToOrderDetailActivity(ParseObject order) {
         String note = order.getString("note");
         String storeName = order.getString("storeName");
         ParseFile file = order.getParseFile("photo");
         JSONArray array = order.getJSONArray("order");
 
-        JSONObject location = locationList.get(position);
-
         Intent intent = new Intent();
         intent.setClass(MainActivity.this, OrderDetailActivity.class);
 
         try {
-            intent.putExtra("lat", location.getDouble("lat"));
-            intent.putExtra("lng", location.getDouble("lng"));
+            String[] storeInfo = storeName.split(",");
+
             intent.putExtra("note", note);
-            intent.putExtra("storeName", storeName);
+            intent.putExtra("storeName", storeInfo[0]);
+            intent.putExtra("storeAddress", storeInfo[1]);
+
             if (file != null) {
                 intent.putExtra("file", file.getData());
             }
             intent.putExtra("array", array.toString());
         } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
             e.printStackTrace();
         }
 

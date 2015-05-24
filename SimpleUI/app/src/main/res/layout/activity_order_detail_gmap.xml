@@ -6,13 +6,27 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.example.simpleui.OrderDetailActivity">
 
-    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/textView_storeName"
+        android:text="@string/hello_world"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/imageView_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/textView_storeName"
+        android:src="@mipmap/ic_launcher"
+        />
 
     <fragment
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/imageView_photo"
         android:name="com.google.android.gms.maps.MapFragment"/>
 
 </RelativeLayout>
