@@ -2,11 +2,9 @@ package com.example.simpleui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
@@ -26,12 +24,16 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -46,7 +48,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -68,7 +69,9 @@ public class MainActivity extends ActionBarActivity {
 
     private JSONArray orderInfo;
     private Bitmap bm;
+
     private List<ParseObject> orderObjects;
+    private List<JSONObject> locationList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,19 +83,23 @@ public class MainActivity extends ActionBarActivity {
         sp = getSharedPreferences("settings", Context.MODE_PRIVATE);
         editor = sp.edit();
 
-        progressDialog = new ProgressDialog(this);
+        initViewsInstance();
+        setViewsValue();
+        setListeners();
 
-        button = (Button) findViewById(R.id.button);
-        editText = (EditText) findViewById(R.id.editText);
-        checkBox = (CheckBox) findViewById(R.id.checkBox);
-        listView = (ListView) findViewById(R.id.listView);
-        spinner = (Spinner) findViewById(R.id.spinner);
-        imageView = (ImageView) findViewById(R.id.imageView);
+        updateHistory();
+        setStoreName();
 
+        initFacebookLoginButton();
+    }
+
+    private void setViewsValue() {
         button.setText("SUBMIT");
         editText.setText(sp.getString("text", ""));
         checkBox.setChecked(sp.getBoolean("checkbox", false));
+    }
 
+    private void setListeners() {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,32 +130,7 @@ public class MainActivity extends ActionBarActivity {
 
                 ParseObject order = orderObjects.get(position);
 
-                String note = order.getString("note");
-                String storeName = order.getString("storeName");
-                ParseFile file = order.getParseFile("photo");
-                JSONArray array = order.getJSONArray("order");
-
-                JSONObject location = locationList.get(position);
-
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, OrderDetailActivity.class);
-
-                try {
-                    intent.putExtra("lat", location.getDouble("lat"));
-                    intent.putExtra("lng", location.getDouble("lng"));
-                    intent.putExtra("note", note);
-                    intent.putExtra("storeName", storeName);
-                    if (file != null) {
-                        intent.putExtra("file", file.getData());
-                    }
-                    intent.putExtra("array",array.toString());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                startActivity(intent);
+                goToOrderDetailActivity(position, order);
             }
         });
 
@@ -160,50 +142,47 @@ public class MainActivity extends ActionBarActivity {
                 editor.commit();
             }
         });
-
-        updateHistory();
-        setStoreName();
     }
 
-    private List<JSONObject> locationList;
+    private void initViewsInstance() {
+        button = (Button) findViewById(R.id.button);
+        editText = (EditText) findViewById(R.id.editText);
+        checkBox = (CheckBox) findViewById(R.id.checkBox);
+        listView = (ListView) findViewById(R.id.listView);
+        spinner = (Spinner) findViewById(R.id.spinner);
+        imageView = (ImageView) findViewById(R.id.imageView);
+        progressDialog = new ProgressDialog(this);
 
-    private AsyncTask<Object, Void, JSONObject> findAddressTask = new AsyncTask<Object, Void, JSONObject>() {
-        int index;
+    }
 
-        // 0: (string)address, 1: (int)index
-        @Override
-        protected JSONObject doInBackground(Object... params) {
-            index = (int) params[1];
+    private void initFacebookLoginButton () {
+        CallbackManager callbackManager = CallbackManager.Factory.create();
 
-            JSONObject jsonObject = Utils.addressToLocation((String) params[0]);
-            return jsonObject;
-        }
+        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions("user_friends");
 
-        @Override
-        protected void onPostExecute(JSONObject jsonObject) {
-            Log.d("debug", jsonObject.toString());
-            locationList.add(index, jsonObject);
-        }
-    };
+        // Callback registration
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
 
-    class FindAddressTask extends AsyncTask<Object, Void, JSONObject> {
+                AccessToken token = loginResult.getAccessToken();
+                Log.d("token", token.getToken());
+                Log.d("token", token.getApplicationId());
 
-        int index;
+                // App code
+            }
 
-        // 0: (string)address, 1: (int)index
-        @Override
-        protected JSONObject doInBackground(Object... params) {
-            index = (int) params[1];
+            @Override
+            public void onCancel() {
+                // App code
+            }
 
-            JSONObject jsonObject = Utils.addressToLocation((String) params[0]);
-            return jsonObject;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject jsonObject) {
-            Log.d("debug", jsonObject.toString());
-            locationList.add(index, jsonObject);
-        }
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+            }
+        });
     }
 
     public void setStoreName() {
@@ -222,8 +201,8 @@ public class MainActivity extends ActionBarActivity {
 
 //                        findAddressTask.execute(address, i);
 
-                        FindAddressTask fat = new FindAddressTask();
-                        fat.execute(address, i);
+                        FindGeoFromAddressTask task = new FindGeoFromAddressTask(locationList);
+                        task.execute(address, i);
 
                         storeNames[i] = name + "," + address;
                     }
@@ -244,8 +223,46 @@ public class MainActivity extends ActionBarActivity {
         startActivityForResult(intent, REQUEST_CODE_ORDER_ACTIVITY);
     }
 
+    private void goToOrderDetailActivity(int position, ParseObject order) {
+        String note = order.getString("note");
+        String storeName = order.getString("storeName");
+        ParseFile file = order.getParseFile("photo");
+        JSONArray array = order.getJSONArray("order");
+
+        JSONObject location = locationList.get(position);
+
+        Intent intent = new Intent();
+        intent.setClass(MainActivity.this, OrderDetailActivity.class);
+
+        try {
+            intent.putExtra("lat", location.getDouble("lat"));
+            intent.putExtra("lng", location.getDouble("lng"));
+            intent.putExtra("note", note);
+            intent.putExtra("storeName", storeName);
+            if (file != null) {
+                intent.putExtra("file", file.getData());
+            }
+            intent.putExtra("array", array.toString());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        startActivity(intent);
+    }
+
     private int getDrinkNumber(JSONArray array) {
-        return new Random().nextInt();
+        int sum = 0;
+        for (int i = 0; i < array.length(); i++) {
+            try {
+                sum += array.getJSONObject(i).getInt("l");
+                sum += array.getJSONObject(i).getInt("m");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return sum;
     }
 
     private void updateHistory() {
@@ -376,18 +393,4 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    View.OnClickListener listener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            send();
-        }
-    };
-
-    class MyOnClickListner implements View.OnClickListener {
-
-        @Override
-        public void onClick(View v) {
-
-        }
-    }
 }
