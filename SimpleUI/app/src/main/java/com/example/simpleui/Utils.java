@@ -126,4 +126,17 @@ public class Utils {
 
         StrictMode.setThreadPolicy(threadPolicy);
     }
+
+    public static String getStaticMapURL(String storeName) {
+        String address = storeName.split(",")[1];
+        try {
+            String encodedAddress = URLEncoder.encode(address, "utf-8");
+            return "https://maps.googleapis.com/maps/api/staticmap?center="
+                    + encodedAddress
+                    + "&zoom=17&size=600x300";
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

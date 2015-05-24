@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -18,9 +20,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 
 public class OrderDetailActivity extends ActionBarActivity {
 
@@ -29,9 +28,18 @@ public class OrderDetailActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_order_detail);
 
-        webView = (WebView) findViewById(R.id.webView);
+        if (GoogleApiAvailability
+                .getInstance()
+                .isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS) {
+
+            setContentView(R.layout.activity_order_detail_gmap);
+            initGoogleMap();
+
+        } else {
+            setContentView(R.layout.activity_order_detail_webview);
+            initWebView();
+        }
 
         Intent intent = getIntent();
 
@@ -45,15 +53,11 @@ public class OrderDetailActivity extends ActionBarActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.d("debug", "note:" + note + ", storeName" + storeName);
 
-        Log.d("debug", "note:" + note + ", storeName" + storeName );
-        webView.loadUrl(getStaticMapURL(storeName));
-        webView.setWebViewClient(new WebViewClient());
-
-        initGoogleMaps();
     }
 
-    public void initGoogleMaps() {
+    private void initGoogleMap() {
 
         double lat = getIntent().getDoubleExtra("lat", 0);
         double lng = getIntent().getDoubleExtra("lng", 0);
@@ -75,18 +79,14 @@ public class OrderDetailActivity extends ActionBarActivity {
         googleMap.addMarker(markerOptions);
     }
 
-    public String getStaticMapURL(String storeName) {
-        String address = storeName.split(",")[1];
-        try {
-            String encodedAddress = URLEncoder.encode(address, "utf-8");
-            return "https://maps.googleapis.com/maps/api/staticmap?center="
-                    + encodedAddress
-                    + "&zoom=17&size=600x300";
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return null;
+    private void initWebView() {
+        String storeName = getIntent().getStringExtra("storeName");
+
+        webView = (WebView) findViewById(R.id.webView);
+        webView.loadUrl(Utils.getStaticMapURL(storeName));
+        webView.setWebViewClient(new WebViewClient());
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
