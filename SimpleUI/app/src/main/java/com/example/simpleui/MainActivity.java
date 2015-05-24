@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -215,10 +214,10 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    public void goToOrderActivity(View view) {
+    public void goToMenuActivity(View view) {
 
         Intent intent = new Intent();
-        intent.setClass(this, OrderActivity.class);
+        intent.setClass(this, MenuActivity.class);
         intent.putExtra("storeName", (String) spinner.getSelectedItem());
         startActivityForResult(intent, REQUEST_CODE_ORDER_ACTIVITY);
     }

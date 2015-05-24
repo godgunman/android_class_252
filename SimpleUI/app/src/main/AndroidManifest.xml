@@ -48,7 +48,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".OrderActivity"
+            android:name=".MenuActivity"
             android:label="@string/title_activity_order" >
         </activity>
         <activity
